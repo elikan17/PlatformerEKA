@@ -30,6 +30,8 @@ public class ExplodeEnemy : MonoBehaviour
     public Transform playerTransform;
 
     private Rigidbody rb;
+    
+    private bool exploding = false;
 
 
     private void Start()
@@ -42,22 +44,26 @@ public class ExplodeEnemy : MonoBehaviour
 
     private void Update()
     {
-        //Check to see how close the player is to the enemy
-        if (Vector3.Distance(transform.position, playerTransform.position) > enemyStats.explodeDist)
         {
-            //Explode if player is within range
-            StartCoroutine("Explode");
+            //Check to see how close the player is to the enemy
+            if (Vector3.Distance(transform.position, playerTransform.position) < enemyStats.explodeDist && !exploding)
+            {
+                //Explode if player is within range
+                StartCoroutine("Explode");
+            }
         }
     }
 
     //Explode Coroutine
     private IEnumerator Explode()
     {
+        exploding = true;
         Instantiate(enemyExplosionParticles, transform.position, Quaternion.identity);
 
         yield return new WaitForSeconds(0.2f);
 
         Destroy(transform.parent.gameObject);
+        
     }
 
     //Coroutine that allows the enemy to jump in place
@@ -66,7 +72,7 @@ public class ExplodeEnemy : MonoBehaviour
         while (enemyStats.shouldJump)
         {
             rb.AddForce(new Vector3(0, enemyStats.jumpVelocity, 0));
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(1.5f);
         }
     }
 }
